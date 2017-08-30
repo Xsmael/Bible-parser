@@ -162,7 +162,7 @@ exports.parse= function (filename, format, callb)
             s= s[0].split('__');
             s.splice(-2);
             var lang= getLang(s[0]);
-            var version= s[1].replace('_',' '); 
+            var version= s[1].replace('_',' ',); 
             lineReader.eachLine(filename, function(line, last) {
                 raw= line.split('||');
                 var verse= {};
