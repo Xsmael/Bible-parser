@@ -1,6 +1,9 @@
 var log = require('noogger');
 var lineReader = require('line-reader');
 var supportedFormats = ["GETBIBLE.NET"];
+/*
+TODO: use franc module to detect language automatically
+*/
 
 var booknames=
 {
@@ -156,25 +159,21 @@ exports.parse= function (filename, format, callb)
     var i;    
     switch(format) {
         case "GETBIBLE.NET":
-            var s= filename.split('/').slice(-1)[0];
-            s= s.split('.');
-            s.splice(-1);
-            s= s[0].split('__');
-            s.splice(-2);
-            var lang= getLang(s[0]);
-            var version= s[1].replace(/_/g,' '); 
+            var info= getInfo(filename);
+ 
             lineReader.eachLine(filename, function(line, last) {
                 raw= line.split('||');
                 var verse= {};
                 i= parseInt( raw[0].slice(0,2) );
                 verse.testament= raw[0].slice(-1);
-                verse.book= booknames[lang][i-1];
+                verse.book= booknames[info.lang][i-1];
                 verse.bookIdx=i;
                 verse.chapter= raw[1];
                 verse.verse= raw[2];
                 verse.word= raw[3];   
-                verse.version= version;
-                verse.lang= lang;
+                verse.version= info.version; 
+                verse.abbrVersion= info.abbrVersion;
+                verse.lang= info.lang ;
 
                 callb(verse, last);
                 
@@ -186,4 +185,27 @@ exports.parse= function (filename, format, callb)
 
 exports.getSupportedFormats =  function () {
     return supportedFormats;
+}
+
+exports.getInfo= getInfo;
+
+function getInfo(filename) {
+    var s= filename.split('/').slice(-1)[0];
+    s= s.split('.');
+    s.splice(-1);
+    s= s[0].split('__');
+    s.splice(-2);
+    return {  
+        version: s[1].replace(/_/g,' '),
+        abbrVersion: abbreviate(s[1].replace(/_/g,' ')),
+        lang: getLang(s[0])
+    };
+}
+
+function abbreviate(versionName) {
+    var out="";
+    versionName.split(' ').forEach(function(word) {
+        out+= word[0];
+    }, this);
+    return out;
 }
