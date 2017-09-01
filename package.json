@@ -1,6 +1,6 @@
 {
   "name": "bible-parser",
-  "version": "0.0.11",
+  "version": "0.0.13",
   "description": "Parses a whole bible (all the books) from the supported formats for you, from here you do what ever you want ;) ",
   "main": "index.js",
   "scripts": {

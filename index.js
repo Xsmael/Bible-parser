@@ -153,15 +153,16 @@ function getLang(str) {
     }
 }
 
-exports.parse= function (filename, format, callb)
+exports.parse= function (filepath, format, callb)
 {
+    filepath= filepath.replace(/\\/g,'/');
     var count= 0;
     var i;    
     switch(format) {
         case "GETBIBLE.NET":
-            var info= getInfo(filename);
+            var info= getInfo(filepath);
  
-            lineReader.eachLine(filename, function(line, last) {
+            lineReader.eachLine(filepath, function(line, last) {
                 raw= line.split('||');
                 var verse= {};
                 i= parseInt( raw[0].slice(0,2) );
@@ -177,7 +178,7 @@ exports.parse= function (filename, format, callb)
 
                 callb(verse, last);
                 
-                if(last)  log.info("done!");
+                // if(last)  log.info("done!");
         });
         break;
     }
@@ -194,10 +195,10 @@ function getInfo(filename) {
     s= s.split('.');
     s.splice(-1);
     s= s[0].split('__');
-    s.splice(-2);
+    s.splice(-1);
     return {  
         version: s[1].replace(/_/g,' '),
-        abbrVersion: abbreviate(s[1].replace(/_/g,' ')),
+        abbrVersion: s[2].toUpperCase(),
         lang: getLang(s[0])
     };
 }
